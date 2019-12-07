@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wxm.mapper.BookMapper">
+    <!-- 以下两个<cache>标签二选一,第一个可以输出日志,第二个不输出日志 -->
+    <!--<cache type="org.mybatis.caches.ehcache.LoggingEhcache" />-->
+    <!--<cache type="org.mybatis.caches.ehcache.EhcacheCache" />-->
+    <!--eviction="FIFO"  回收策略为先进先出-->
+    <!--flushInterval="60000" 自动刷新时间60s-->
+    <!--size="512" 最多缓存512个引用对象-->
+    <!--readOnly="true"  只读-->
+ <cache type="com.wxm.util.RedisCache"
+           eviction="LRU"
+           flushInterval="6000000"
+           size="1024"
+           readOnly="false">
+    </cache>
+<!--    <cache type="org.mybatis.caches.ehcache.EhcacheCache">
+        <property name="timeToIdleSeconds" value="3600"/>
+        <property name="timeToLiveSeconds" value="3600"/>
+        <property name="maxEntriesLocalHeap" value="1000"/>
+        <property name="maxEntriesLocalDisk" value="10000000"/>
+        <property name="memoryStoreEvictionPolicy" value="LRU"/>
+    </cache>-->
+
+    <resultMap id="BaseResultMap" type="com.wxm.model.Book">
+        <constructor>
+            <idArg column="bid" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="bname" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="price" jdbcType="REAL" javaType="java.lang.Float"/>
+        </constructor>
+    </resultMap>
+    <sql id="Base_Column_List">
+    bid, bname, price
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from t_mvc_book
+        where bid = #{bid,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_mvc_book
+    where bid = #{bid,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.wxm.model.Book">
+    insert into t_mvc_book (bid, bname, price
+      )
+    values (#{bid,jdbcType=INTEGER}, #{bname,jdbcType=VARCHAR}, #{price,jdbcType=REAL}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.wxm.model.Book">
+        insert into t_mvc_book
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bid != null">
+                bid,
+            </if>
+            <if test="bname != null">
+                bname,
+            </if>
+            <if test="price != null">
+                price,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bid != null">
+                #{bid,jdbcType=INTEGER},
+            </if>
+            <if test="bname != null">
+                #{bname,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=REAL},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.wxm.model.Book">
+        update t_mvc_book
+        <set>
+            <if test="bname != null">
+                bname = #{bname,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=REAL},
+            </if>
+        </set>
+        where bid = #{bid,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.wxm.model.Book">
+    update t_mvc_book
+    set bname = #{bname,jdbcType=VARCHAR},
+      price = #{price,jdbcType=REAL}
+    where bid = #{bid,jdbcType=INTEGER}
+  </update>
+    <select id="listPager" resultType="java.util.Map" parameterType="java.util.Map">
+        select
+        <include refid="Base_Column_List"/>
+        from t_mvc_book
+        <where>
+            <if test="bname!=null and bname!=''">
+                and bname like #{bname}
+            </if>
+        </where>
+    </select>
+    <select id="listPager1" resultType="java.util.Map" parameterType="com.wxm.model.Book">
+        select
+        <include refid="Base_Column_List"/>
+        from t_mvc_book
+        <where>
+            <if test="bname!=null and bname!=''">
+                and bname like #{bname}
+            </if>
+        </where>
+    </select>
+</mapper>
