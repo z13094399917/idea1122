@@ -46,7 +46,7 @@
         <redis.spring.version>1.7.1.RELEASE</redis.spring.version>
 
         <!-- jackson -->
-        <jackson.version>2.9.3</jackson.version>
+        <jackson.version>2.11.0</jackson.version>
 
         <!--5.其他-->
         <junit.version>4.12</junit.version>
